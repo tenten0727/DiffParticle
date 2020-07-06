@@ -24,10 +24,8 @@ class ofApp : public ofBaseApp{
     ofShader render, updatePos;
     ofEasyCam cam;
     pingPongBuffer pingPong;
-    ofVec3f emitterPos, prevEmitterPos;
     int particleNum, texRes;
     bool showTex;
-    ofFbo fboParticle;
     
     ofVideoGrabber cap;
 };

@@ -26,6 +26,7 @@ class ofApp : public ofBaseApp{
     pingPongBuffer pingPong;
     int particleNum, texRes;
     bool showTex;
-    
+    ofImage image;
+        
     ofVideoGrabber cap;
 };

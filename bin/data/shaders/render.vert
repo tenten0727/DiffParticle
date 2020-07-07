@@ -4,6 +4,8 @@
 
 uniform sampler2DRect u_posAndAgeTex;
 uniform sampler2DRect capTex;
+uniform sampler2DRect imgTex;
+attribute vec2 texcoord;
 
 varying vec2 v_TexCoord;
 

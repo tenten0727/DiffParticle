@@ -14,6 +14,8 @@ void ofApp::setup(){
     render.load("shaders/render");
     updatePos.load("","shaders/update.frag");
     
+    image.load("EPcPI9mU8AArjyK.jpeg");
+    
     
     // パーティクルの初期設定
     particles.setMode(OF_PRIMITIVE_POINTS);
@@ -70,18 +72,18 @@ void ofApp::update(){
     // 複数バッファの書き出しを有効化
     pingPong.dst->activateAllDrawBuffers();
     ofClear(0);
-    
+
     updatePos.begin();
 
     updatePos.setUniformTexture("u_posAndAgeTex", pingPong.src->getTextureReference(0), 0);
     updatePos.setUniformTexture("u_velAndMaxAgeTex", pingPong.src->getTextureReference(1), 1);
     updatePos.setUniform1f("u_time", time);
     updatePos.setUniform1f("u_timestep", 0.05);
-    updatePos.setUniform1f("u_scale", 0.005);
+    updatePos.setUniform1f("u_scale", 0.001);
     pingPong.src->draw(0, 0);
-    
+
     updatePos.end();
-    
+
     pingPong.dst->end();
     pingPong.swap();
 }
@@ -90,18 +92,17 @@ void ofApp::update(){
 void ofApp::draw(){
     ofPushStyle();
     
-    ofEnableBlendMode(OF_BLENDMODE_ADD);
-    ofEnablePointSprites();
-    
     render.begin();
-    
     render.setUniformTexture("u_posAndAgeTex", pingPong.src->getTextureReference(0), 0);
     render.setUniformTexture("capTex", cap.getTexture(), 1);
+    render.setUniformTexture("imgTex", image.getTexture(), 2);
+    render.setUniform2f("resolution",glm::vec2(ofGetWidth(),ofGetHeight()));
+
+
     particles.draw();
     
     render.end();
     
-    ofDisablePointSprites();
     ofPopStyle();
     
     if(showTex){

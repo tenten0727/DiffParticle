@@ -1,6 +1,7 @@
 #version 120
 
 uniform sampler2DRect capTex;
+uniform sampler2DRect imgTex;
 
 varying vec2 v_TexCoord;
 

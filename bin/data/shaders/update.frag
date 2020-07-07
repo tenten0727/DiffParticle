@@ -26,10 +26,14 @@ void main(void){
 
     age++;
     // Curl Noiseで速度を更新
-    vel.x += 0.01*snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 0.1352 * u_time * u_timestep));
-    vel.y += 0.01*snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 1.2814 * u_time * u_timestep));
+    if(snoise(vec4(0.0, pos.x * u_scale, pos.y * u_scale, u_time * u_timestep)) > 0.3){
+        vel.x += snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 0.1352 * u_time * u_timestep));
+        vel.y += snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 1.2814 * u_time * u_timestep));
+        vel.z += abs(snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 2.4382 * u_time * u_timestep)));
+        pos += vel;
+    }
     
-    pos += vel;
+    pos += 0.1*(vec3(st, 0.0) - pos);
     
     gl_FragData[0].rgba = vec4(pos, age); // 位置と経過時間を出力
     gl_FragData[1].rgba = vec4(vel, maxAge); //速度と生存期間を出力

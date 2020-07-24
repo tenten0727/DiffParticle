@@ -2,6 +2,9 @@
 
 #include "ofMain.h"
 #include "pingPongBuffer.h"
+#include "ofxCv.h"
+#include "ofxOpenCv.h"
+#include "ofxSequenceRecorder.h"
 
 class ofApp : public ofBaseApp{
 
@@ -26,7 +29,14 @@ class ofApp : public ofBaseApp{
     pingPongBuffer pingPong;
     int particleNum, texRes;
     bool showTex;
-    ofImage image;
+    
+    ofFbo fbo;
+    cv::Mat Mat;
+    ofImage outImage;
         
     ofVideoGrabber cap;
+    ofVideoPlayer video;
+    
+    ofxSequenceRecorder recorder;
+
 };

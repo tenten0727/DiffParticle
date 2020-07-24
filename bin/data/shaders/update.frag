@@ -26,7 +26,7 @@ void main(void){
 
     age++;
     // Curl Noiseで速度を更新
-    if(snoise(vec4(0.0, pos.x * u_scale, pos.y * u_scale, u_time * u_timestep)) > 0.3){
+    if(snoise(vec4(0.0, pos.x * u_scale, pos.y * u_scale, u_time * u_timestep)) > 0.25){
         vel.x += snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 0.1352 * u_time * u_timestep));
         vel.y += snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 1.2814 * u_time * u_timestep));
         vel.z += abs(snoise(vec4(pos.x * u_scale, pos.y * u_scale, pos.z * u_scale, 2.4382 * u_time * u_timestep)));

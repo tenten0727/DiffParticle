@@ -9,13 +9,14 @@ void ofApp::setup(){
 
     cam.setupPerspective();
     
-    cap.setup(ofGetWidth(), ofGetHeight());
+//    cap.setup(ofGetWidth(), ofGetHeight());
+    video.load("gokiaruki.mov");
+    video.play();
 
     render.load("shaders/render");
     updatePos.load("","shaders/update.frag");
     
-    image.load("EPcPI9mU8AArjyK.jpeg");
-    
+    fbo.allocate(1980, 1080);
     
     // パーティクルの初期設定
     particles.setMode(OF_PRIMITIVE_POINTS);
@@ -59,11 +60,18 @@ void ofApp::setup(){
 
     
 	showTex = false;
+    
+    outImage.allocate(ofGetWidth(), ofGetHeight(), OF_IMAGE_COLOR);
+    
+    Mat = cv::Mat(outImage.getHeight(), outImage.getWidth(), CV_MAKETYPE(CV_8UC3, outImage.getPixels().getNumChannels()), outImage.getPixels().getData(), 0);
+    
+    recorder.setup();
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    cap.update();
+    video.update();
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
     
     float time = ofGetElapsedTimef();
@@ -86,22 +94,43 @@ void ofApp::update(){
 
     pingPong.dst->end();
     pingPong.swap();
+    
+    ofImage capImg;
+    if(ofGetFrameNum()%60 == 1){
+        capImg.setFromPixels(video.getPixels());
+        cv::Mat srcMat = ofxCv::toCv(capImg);
+        for (int y = 0; y < Mat.rows; y++) {
+            for (int x = 0; x < Mat.cols; x++) {
+                Mat.at<cv::Vec3b>(y, x) = srcMat.at<cv::Vec3b>(y, x);
+            }
+        }
+    }
+    
+   
+    outImage.update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofPushStyle();
     
+    ofPushStyle();
+    fbo.begin();
+    ofSetColor(ofRandom(100), ofRandom(150), 150);
+    outImage.draw(0, 0);
     render.begin();
     render.setUniformTexture("u_posAndAgeTex", pingPong.src->getTextureReference(0), 0);
-    render.setUniformTexture("capTex", cap.getTexture(), 1);
-    render.setUniformTexture("imgTex", image.getTexture(), 2);
+    render.setUniformTexture("capTex", video.getTexture(), 1);
     render.setUniform2f("resolution",glm::vec2(ofGetWidth(),ofGetHeight()));
 
 
     particles.draw();
     
     render.end();
+    
+    fbo.end();
+    
+//    fbo.draw(0, 0);
+    recorder.record(fbo);
     
     ofPopStyle();
     

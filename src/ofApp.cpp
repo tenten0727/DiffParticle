@@ -9,19 +9,19 @@ void ofApp::setup(){
 
     cam.setupPerspective();
     
-//    cap.setup(ofGetWidth(), ofGetHeight());
+//    cap.setup(video.getWidth(), video.getHeight());
     video.load("gokiaruki.mov");
     video.play();
 
     render.load("shaders/render");
     updatePos.load("","shaders/update.frag");
     
-    fbo.allocate(1980, 1080);
+    fbo.allocate(video.getWidth(), video.getHeight());
     
     // パーティクルの初期設定
     particles.setMode(OF_PRIMITIVE_POINTS);
-    for(int i=0;i<ofGetHeight();i++){
-        for(int j=0;j<ofGetWidth();j++){
+    for(int i=0;i<video.getHeight();i++){
+        for(int j=0;j<video.getWidth();j++){
                 particles.addVertex(ofVec3f(0,0,0));
                 particles.addTexCoord(ofVec2f(j, i));
                 particles.addColor(ofFloatColor(1.0, 1.0, 1.0, 1.0));
@@ -30,38 +30,41 @@ void ofApp::setup(){
     
     
     //pingPong初期設定
-    pingPong.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F, 2);
-	float * posAndAge = new float[ofGetWidth() * ofGetHeight() * 4];
-    for (int x = 0; x < ofGetWidth(); x++){
-        for (int y = 0; y < ofGetHeight(); y++){
-            int i = ofGetWidth() * y + x;
+    pingPong.allocate(video.getWidth(), video.getHeight(), GL_RGBA32F, 2);
+    int width = (int)video.getWidth();
+    int height = (int)video.getHeight();
+
+	float * posAndAge = new float[width * height * 4];
+    for (int x = 0; x < video.getWidth(); x++){
+        for (int y = 0; y < video.getHeight(); y++){
+            int i = video.getWidth() * y + x;
             posAndAge[i*4 + 0] = x;
             posAndAge[i*4 + 1] = y;
             posAndAge[i*4 + 2] = 0;
             posAndAge[i*4 + 3] = 0;
         }
     }
-    pingPong.src->getTextureReference(0).loadData(posAndAge, ofGetWidth(), ofGetHeight(), GL_RGBA);
+    pingPong.src->getTextureReference(0).loadData(posAndAge, video.getWidth(), video.getHeight(), GL_RGBA);
     delete [] posAndAge;
     
     
-	float * velAndMaxAge = new float[ofGetWidth() * ofGetHeight() * 4];
-    for (int x = 0; x < ofGetWidth(); x++){
-        for (int y = 0; y < ofGetHeight(); y++){
-            int i = ofGetWidth() * y + x;
+	float * velAndMaxAge = new float[width * height * 4];
+    for (int x = 0; x < video.getWidth(); x++){
+        for (int y = 0; y < video.getHeight(); y++){
+            int i = video.getWidth() * y + x;
             velAndMaxAge[i*4 + 0] = 0.0;
             velAndMaxAge[i*4 + 1] = 0.0;
             velAndMaxAge[i*4 + 2] = 0.0;
             velAndMaxAge[i*4 + 3] = ofRandom(1,150);
         }
     }
-    pingPong.src->getTextureReference(1).loadData(velAndMaxAge, ofGetWidth(), ofGetHeight(), GL_RGBA);
+    pingPong.src->getTextureReference(1).loadData(velAndMaxAge, video.getWidth(), video.getHeight(), GL_RGBA);
     delete [] velAndMaxAge;
 
     
 	showTex = false;
     
-    outImage.allocate(ofGetWidth(), ofGetHeight(), OF_IMAGE_COLOR);
+    outImage.allocate(video.getWidth(), video.getHeight(), OF_IMAGE_COLOR);
     
     Mat = cv::Mat(outImage.getHeight(), outImage.getWidth(), CV_MAKETYPE(CV_8UC3, outImage.getPixels().getNumChannels()), outImage.getPixels().getData(), 0);
     
@@ -120,7 +123,7 @@ void ofApp::draw(){
     render.begin();
     render.setUniformTexture("u_posAndAgeTex", pingPong.src->getTextureReference(0), 0);
     render.setUniformTexture("capTex", video.getTexture(), 1);
-    render.setUniform2f("resolution",glm::vec2(ofGetWidth(),ofGetHeight()));
+    render.setUniform2f("resolution",glm::vec2(video.getWidth(),video.getHeight()));
 
 
     particles.draw();
@@ -129,7 +132,7 @@ void ofApp::draw(){
     
     fbo.end();
     
-//    fbo.draw(0, 0);
+    fbo.draw(0, 0);
     recorder.record(fbo);
     
     ofPopStyle();

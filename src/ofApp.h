@@ -6,6 +6,7 @@
 #include "ofxOpenCv.h"
 #include "ofxSequenceRecorder.h"
 
+
 class ofApp : public ofBaseApp{
 
 	public:
